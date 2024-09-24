@@ -1,9 +1,8 @@
-
-import { getRepository } from 'typeorm';
 import { Category } from '../entities/Category';
+import { AppDataSource } from '../configs/AppDataSource';
 
 export class CategoryService {
-    private categoryRepository = getRepository(Category);
+    private categoryRepository = AppDataSource.getRepository(Category);
 
     async addCategory(name: string, parentId?: number) {
         const category = new Category();

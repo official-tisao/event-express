@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { addCategory, removeCategory, getSubtree, moveSubtree } from '../controllers/categoryController';
+import { addCategory, removeCategory, getSubtree, moveSubtree } from '../controllers/CategoryController';
 
 const router = Router();
 

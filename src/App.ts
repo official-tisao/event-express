@@ -3,69 +3,62 @@ import { Pool } from 'pg';
 import routes from './routes';
 import dotenv from 'dotenv';
 import logger from './configs/logger';
-import { createConnection } from 'typeorm';
+import { AppDataSource } from './configs/AppDataSource';
 import { Category } from './entities/Category';
-dotenv.config();     
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4002;
 
 // Body parser middleware
 app.use(express.json());
+    
+logger.info('Connected to the database');
 
-// Database connection setup
-export const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: parseInt(process.env.DB_PORT || '5432')
-});
+AppDataSource.initialize()
+    .then(() => {
+        logger.info("Data Source has been initialized!");
+        console.log("Data Source has been initialized!");
 
-createConnection({
-    type: process.env.DB_TYPE as 'postgres',
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT || '5432'),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    synchronize: true, // set to false in production
-    logging: true,
-    entities: [
-        Category,
-    ],
-  })
-    .then(async connection => {
-      logger.info('Connected to the database');
-  
-      // Example: Save a new user
-      const categoryRepository = connection.getRepository(Category);
-      const newCategory = new Category();
-      newCategory.name = 'John-Doe';
-      newCategory.parent = {name: 'Parent', id: 1};
-      await categoryRepository.save(newCategory);
-      logger.info('User saved: ', newCategory);
-  
-      // Start the server
-      const PORT = process.env.PORT || 3000;
-      app.listen(PORT, () => {
-        logger.info(`Server is running on port ${PORT}`);
-      });
+        const categoryRepository = AppDataSource.getRepository(Category);
+        const newCategory = new Category();
+        newCategory.name = 'John-Doe';
+        return categoryRepository.save(newCategory);
     })
-    .catch(error => logger.error('Database connection error: ', error));
+    .then((savedCategory) => {
+        console.log('Category saved: ', savedCategory);
+        logger.info('Category saved: ', savedCategory);
+    })
+    .catch((error) => {
+        console.log('Error during Data Source initialization: ', error);
+        logger.error('Error during Data Source initialization: ', error);
+    });
+
+const categoryRepository = AppDataSource.getRepository(Category);
+const newCategory = new Category();
+newCategory.name = 'John-Doe';
+newCategory.id = 1;
+categoryRepository.save(newCategory);
+logger.info('User saved: ', newCategory);
+
+
+    
 
 app.use((err: any, req: any, res: any, next: any) => {
+    console.log(`Error occurred: ${err.message}`);
     logger.error(`Error occurred: ${err.message}`);
     res.status(500).send('Something went wrong!');
   });
 
 // Catch unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
     logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   });
-  
+
 // Catch uncaught exceptions
 process.on('uncaughtException', (error) => {
-logger.error('Uncaught Exception thrown:', error);
+    console.log('Uncaught Exception thrown:', error);
+    logger.error('Uncaught Exception thrown:', error);
 });
 
 // Set up routes
@@ -74,4 +67,5 @@ app.use('/api', routes);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
+  logger.info(`Server is running on port http://localhost:${PORT}`);
 });

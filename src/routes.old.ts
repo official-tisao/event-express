@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { pool } from './app';
-import logger from './configs/logger';
+import { pool } from './configs/AppDataSource';
+import logger from './configs/Logger';
 
 const router = Router();
 
