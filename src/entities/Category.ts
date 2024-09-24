@@ -4,10 +4,10 @@ import { Entity, PrimaryGeneratedColumn, Column, Tree, TreeChildren, TreeParent 
 @Entity()
 @Tree("closure-table") 
 export class Category {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({name: "id"})
     id: number=0;
 
-    @Column()
+    @Column({name: "name"})
     name: string="default";
 
     @TreeChildren()
