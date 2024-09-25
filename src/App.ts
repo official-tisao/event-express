@@ -17,14 +17,22 @@ app.use(express.json());
       await AppDataSource.initialize();
       logger.info("Data Source has been initialized!");
       console.log("Data Source has been initialized!");
-  
+
       const categoryRepository = AppDataSource.getRepository(Category);
       const newCategory = new Category();
       newCategory.name = 'John-Doe';
-      const savedCategory = await categoryRepository.save(newCategory);
-      
-      console.log('Category saved: ', savedCategory);
-      logger.info('Category saved: ', savedCategory);
+
+      const exist = await categoryRepository.findOne({ where: { name: newCategory.name } });
+
+      if (exist){
+          console.log('Category already exists', newCategory);
+          logger.info('Category already exists', newCategory);
+      } else {
+        const savedCategory = await categoryRepository.save(newCategory);
+        console.log('Category saved: ', savedCategory);
+        logger.info('Category saved: ', savedCategory);
+        }
+
 
 
       app.use((err: any, req: any, res: any, next: any) => {
@@ -32,7 +40,7 @@ app.use(express.json());
         logger.error(`Error occurred: ${err.message}`);
         res.status(500).send('Something went wrong!');
       });
-  
+
     // Set up routes
     app.use('/api', routes);
 

@@ -7,7 +7,10 @@ export class CategoryService {
     async addCategory(name: string, parentId?: number) {
         const category = new Category();
         category.name = name;
-
+        const exist = await this.categoryRepository.findOne({ where: { name: name } });
+        
+        if (exist) throw new Error('Category already exists');
+        
         if (parentId) {
             const parentCategory = await this.categoryRepository.findOne({where: {id: parentId}});
             if (parentCategory) {
@@ -58,9 +61,9 @@ export class CategoryService {
 
     async getCategoryByParentName(parentName: string) {
         const parent = await this.categoryRepository.findOne({ where: { name: parentName } });
-    if (!parent) throw new Error('Parent category not found');
-        return this.categoryRepository.find({ where: { parentId: parent.id } });
-    }
+        if (!parent) throw new Error('Parent category not found');
+            return this.categoryRepository.find({ where: { parentId: parent.id } });
+        }
 
     async getCategoryByChildName(childName: string) {
         return this.categoryRepository.findOne({ where: { name: childName } });
