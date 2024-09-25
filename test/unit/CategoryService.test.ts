@@ -30,7 +30,7 @@ describe('CategoryService', () => {
     mockCategory2 = new Category();
     mockCategory2.id = 1001;
     mockCategory2.name = 'Test Category2';
-    mockCategory2.parentId=1000;
+    mockCategory2.parentID=1000;
     categoryRepository = (jest.requireMock('typeorm').getRepository as jest.MockedFunction<
         typeof Repository
     >)(Category);
@@ -54,12 +54,12 @@ describe('CategoryService', () => {
     }
   });
 
-  it('should get a parent id', async () => {
+  it('should get a parentID id', async () => {
     await categoryService.addCategory(mockCategory.name, mockCategory.id);
     const result = await categoryService.getCategoryById(1000);
     expect(result).toBeDefined();
     if (result instanceof Category) {
-      expect(result.parentId).toBe(1001);
+      expect(result.parentID).toBe(1001);
     }
   });
 // });
