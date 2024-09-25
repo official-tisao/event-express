@@ -9,31 +9,31 @@ dotenv.config();
 
 export const AppDataSource = new DataSource({
     type: process.env.DB_TYPE as 'postgres',
-    host: process.env.DB_HOST as string,  
+    host: process.env.DB_HOST as string,
     port: parseInt(process.env.DB_PORT as string, 10),
-    username: process.env.DB_USERNAME as string,
+    username: process.env.DB_USER as string,
     password: process.env.DB_PASSWORD as string,
     database: process.env.DB_NAME as string,
-    synchronize: true, 
-    logging: false, 
+    synchronize: true,
+    logging: false,
     // entities: ['../entities/*.ts'],
     //entities: ['Category'],
     entities: [path.join(__dirname, '..', 'entities', '*.ts')],
-    
-    migrations: [], 
+
+    migrations: [],
     subscribers: [],
 });
 
-// Initialize the data source (connection)
-AppDataSource.initialize()
-    .then(() => {
-        logger.info("Data Source has been initialized!");
-        console.log("Data Source has been initialized!");
-    })
-    .catch((error) => {
-        logger.error("Error during Data Source initialization:", error);
-        console.error("Error during Data Source initialization:", error);
-    });
+// // Initialize the data source (connection)
+// await AppDataSource.initialize()
+//     .then(() => {
+//         logger.info("Data Source has been initialized!");
+//         console.log("Data Source has been initialized!");
+//     })
+//     .catch((error) => {
+//         logger.error("Error during Data Source initialization:", error);
+//         console.error("Error during Data Source initialization:", error);
+//     });
 
 export const pool = new Pool({
     user: process.env.DB_USER,

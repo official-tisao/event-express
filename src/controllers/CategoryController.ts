@@ -1,6 +1,8 @@
 
 import { Request, Response } from 'express';
 import { CategoryService } from '../services/CategoryService';
+import { pool } from '../configs/AppDataSource';
+import logger from '../configs/Logger';
 
 const categoryService = new CategoryService();
 
@@ -9,7 +11,7 @@ export const addCategory = async (req: Request, res: Response) => {
     try {
         const result = await categoryService.addCategory(name, parentId);
         res.json(result);
-    } catch (error) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
@@ -19,7 +21,7 @@ export const removeCategory = async (req: Request, res: Response) => {
     try {
         await categoryService.removeCategory(parseInt(id));
         res.json({ message: 'Category removed' });
-    } catch (error) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
@@ -29,7 +31,7 @@ export const getSubtree = async (req: Request, res: Response) => {
     try {
         const subtree = await categoryService.getSubtree(parseInt(id));
         res.json(subtree);
-    } catch (error) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
@@ -39,7 +41,18 @@ export const moveSubtree = async (req: Request, res: Response) => {
     try {
         const result = await categoryService.moveSubtree(id, newParentId);
         res.json(result);
-    } catch (error) {
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getDefaultAndHealthCheck = async (req: Request, res: Response) => {
+    try {
+        const result = await pool.query('SELECT NOW()');
+        res.json(result.rows);
+    } catch (error: any) {
+        console.error(error.message);
+        logger.error(error.message);
+          res.status(500).json({ error: 'Server error' });
+    }
+};  

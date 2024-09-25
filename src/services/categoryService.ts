@@ -9,9 +9,9 @@ export class CategoryService {
         category.name = name;
 
         if (parentId) {
-            const parentCategory = await this.categoryRepository.findOne(parentId);
+            const parentCategory = await this.categoryRepository.findOne({where: {id: parentId}});
             if (parentCategory) {
-                category.parent = parentCategory;
+                category.parentId = parentCategory.id;
             }
         }
 
@@ -19,7 +19,7 @@ export class CategoryService {
     }
 
     async removeCategory(id: number) {
-        const category = await this.categoryRepository.findOne(id);
+        const category = await this.categoryRepository.findOne({where: {id: id}});
         if (category) {
             return this.categoryRepository.remove(category);
         }
@@ -27,16 +27,42 @@ export class CategoryService {
     }
 
     async getSubtree(id: number) {
-        return this.categoryRepository.findDescendantsTree(await this.categoryRepository.findOne(id));
+        return this.categoryRepository.findBy({parentId: id});
     }
 
     async moveSubtree(id: number, newParentId: number) {
-        const category = await this.categoryRepository.findOne(id);
-        const newParent = await this.categoryRepository.findOne(newParentId);
+        const category = await this.categoryRepository.findOne({where: {id: id}});
+        const newParent = await this.categoryRepository.findOne({where: {id: newParentId}});
         if (category && newParent) {
-            category.parent = newParent;
+            category.parentId = newParent.id;
             return this.categoryRepository.save(category);
         }
         throw new Error('Category or new parent not found');
+    }
+
+    async getAllCategories() {
+        return this.categoryRepository.find();
+    }
+
+    async getCategoryById(id: number) {
+        return this.categoryRepository.findOne({where: {id: id}});
+    }
+
+    async getCategoryByName(name: string) {
+        return this.categoryRepository.findOne({where: {name: name}});
+    }
+
+    async getCategoryByParentId(parentId: number) {
+        return this.categoryRepository.find({where: {parentId: parentId}});
+    }
+
+    async getCategoryByParentName(parentName: string) {
+        const parent = await this.categoryRepository.findOne({ where: { name: parentName } });
+    if (!parent) throw new Error('Parent category not found');
+        return this.categoryRepository.find({ where: { parentId: parent.id } });
+    }
+
+    async getCategoryByChildName(childName: string) {
+        return this.categoryRepository.findOne({ where: { name: childName } });
     }
 }
