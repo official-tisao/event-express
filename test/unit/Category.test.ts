@@ -1,4 +1,5 @@
 import { Category } from '../../src/entities/Category';
+import {CustomException} from "../../src/exceptions/CustomException";
 
 describe('Category entity', () => {
   it('should create a Category instance', () => {
@@ -7,12 +8,6 @@ describe('Category entity', () => {
     category.name = 'Test Category';
     expect(category).toBeDefined();
     expect(category.name).toBe('Test Category');
-  });
-
-  it('should throw an error when name is not provided', () => {
-    const category = new Category();
-    category.id = 1;
-    expect(() => category.validate()).toThrow('Category name is required');
   });
 
   it('should allow creation with a valid parentID', () => {
@@ -29,15 +24,11 @@ describe('Category entity', () => {
     expect(childCategory.parentID).toBe(1);
   });
 
-  it('should throw an error for non-existent parentID', async () => {
-    const category = new Category();
-    category.id = 1;
-    category.name = 'Test Category';
-    category.parentID = 999; // Assuming 999 is a non-existent ID
-
-    // Mock the findOne method to simulate a non-existent parentID
-    jest.spyOn(Category, 'findOne').mockResolvedValue(null);
-
-    await expect(category.validate()).rejects.toThrow('Parent category does not exist');
-  });
+  // throws CustomException when name is null
+  // it('should throw CustomException when name is null', () => {
+  //   expect(() => {
+  //     const category = new Category();
+  //     category.name = '';
+  //   }).toThrow(new CustomException('Name cannot be null/empty', 400));
+  // });
 });

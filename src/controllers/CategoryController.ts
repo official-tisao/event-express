@@ -1,9 +1,10 @@
 
 import { Request, Response } from 'express';
 import { CategoryService } from '../services/CategoryService';
-import { pool } from '../configs/AppDataSource';
+import { AppDataSource } from '../configs/AppDataSource';
 import logger from '../configs/Logger';
 import { CustomException } from '../exceptions/CustomException';
+import {EntityNotFoundError} from "typeorm";
 
 const categoryService = new CategoryService();
 
@@ -27,7 +28,7 @@ export const removeCategory = async (req: Request, res: Response) => {
         if (error instanceof CustomException) {
             res.status(error.status).json({ error: error.message });
         } else {
-            res.status(400).json({ error: error.message });
+            res.status(404).json({ error: error.message });
         }
     }
 };
@@ -100,7 +101,7 @@ export const getAllCategories = async(req: Request, res: Response) => {
 
 export const getDefaultAndHealthCheck = async (req: Request, res: Response) => {
     try {
-        const result = await pool.query('SELECT NOW()');
+        const result = await AppDataSource.query('SELECT NOW()');
         res.json("Server UP as at " + result.rows);
     } catch (error: any) {
         console.error(error.message);
