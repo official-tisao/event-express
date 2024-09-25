@@ -17,20 +17,20 @@ app.use(express.json());
       logger.info("Data Source has been initialized!");
       console.log("Data Source has been initialized!");
 
-      const categoryRepository = AppDataSource.getRepository(Category);
-      const newCategory = new Category();
-      newCategory.name = 'John-Doe';
-
-      const exist = await categoryRepository.findOne({ where: { name: newCategory.name } });
-
-      if (exist){
-          console.log('Category already exists', newCategory);
-          logger.info('Category already exists', newCategory);
-      } else {
-        const savedCategory = await categoryRepository.save(newCategory);
-        console.log('Category saved: ', savedCategory);
-        logger.info('Category saved: ', savedCategory);
-        }
+      // const categoryRepository = AppDataSource.getRepository(Category);
+      // const newCategory = new Category();
+      // newCategory.name = 'John-Doe';
+      //
+      // const exist = await categoryRepository.findOne({ where: { name: newCategory.name } });
+      //
+      // if (exist){
+      //     console.log('Category already exists', newCategory);
+      //     logger.info('Category already exists', newCategory);
+      // } else {
+      //   const savedCategory = await categoryRepository.save(newCategory);
+      //   console.log('Category saved: ', savedCategory);
+      //   logger.info('Category saved: ', savedCategory);
+      //   }
 
 
 

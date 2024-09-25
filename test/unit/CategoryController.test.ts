@@ -5,27 +5,27 @@ let categoryService: CategoryService;
 
 describe('addCategory', () => {
 
-  // Successfully adds a new category with valid name and parentId
-  it('should add a new category when valid name and parentId are provided', async () => {
+  // Successfully adds a new category with valid name and parentID
+  it('should add a new category when valid name and parentID are provided', async () => {
     const req = {
       body: {
         name: 'New Category',
-        parentId: 1
+        parentID: 1
       }
     } as unknown as Request;
     const res = {
       json: jest.fn()
     } as unknown as Response;
-    const addCategoryMock = jest.spyOn(categoryService, 'addCategory').mockResolvedValue({ id: 1, name: 'New Category', parentId: 1 });
+    const addCategoryMock = jest.spyOn(categoryService, 'addCategory').mockResolvedValue({ id: 1, name: 'New Category', parentID: 1 });
 
     await addCategory(req as Request, res);
 
     expect(addCategoryMock).toHaveBeenCalledWith('New Category', 1);
-    expect(res.json).toHaveBeenCalledWith({ id: 1, name: 'New Category', parentId: 1 });
+    expect(res.json).toHaveBeenCalledWith({ id: 1, name: 'New Category', parentID: 1 });
   });
 
-  // Handles missing name or parentId in the request body
-  it('should return 500 error when name or parentId is missing', async () => {
+  // Handles missing name or parentID in the request body
+  it('should return 500 error when name or parentID is missing', async () => {
     const req = {
       body: {
         name: ''

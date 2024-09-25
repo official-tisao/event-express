@@ -8,8 +8,10 @@
 - [Endpoints](#endpoints)
   - [Get All Categories](#get-all-categories)
   - [Get Category By ID](#get-category-by-id)
+  - [Get Category Subtree By ID](#get-category-children-by-id)
   - [Create New Category](#create-new-category)
   - [Update Category](#update-category)
+  - [Move Subtree](#move-children)
   - [Delete Category](#delete-category)
 - [Error Responses](#error-responses)
 
@@ -62,7 +64,7 @@ To install the project, follow these steps:
 
 Retrieves a list of all categories.
 
-- **URL:** `/categories`
+- **URL:** `/`
 - **Method:** `GET`
 - **URL Params:** None
 - **Data Params:** None
@@ -74,12 +76,12 @@ Retrieves a list of all categories.
       {
         "id": 1,
         "name": "Category 1",
-        "parentId": null
+        "parentID": null
       },
       {
         "id": 2,
         "name": "Category 2",
-        "parentId": 1
+        "parentID": 1
       }
     ]
     ```
@@ -88,7 +90,7 @@ Retrieves a list of all categories.
 
 Retrieves a specific category by its ID.
 
-- **URL:** `/categories/:id`
+- **URL:** `/category/:id`
 - **Method:** `GET`
 - **URL Params:** 
   - `id=[integer]` (required)
@@ -100,24 +102,67 @@ Retrieves a specific category by its ID.
     {
       "id": 1,
       "name": "Category 1",
-      "parentId": null
+      "parentID": null
     }
     ```
 - **Error Response:**
   - **Code:** 404 NOT FOUND
   - **Content:** `{ "error": "Category not found" }`
 
+### Get Category Subtree By ID
+
+Retrieves a category and all its subcategories recursively.
+
+- **URL:** `/category/:id/children`
+- **Method:** `GET`
+- **URL Params:**
+  - `id=[integer]` (required)
+- **Success Response:**
+  - **Code:** 200
+  - **Content:**
+    ```json
+    {
+      "id": 1,
+      "name": "Root Category",
+      "children": [
+        {
+          "id": 2,
+          "name": "Subcategory 1",
+          "parentID": 1,
+          "children":[]
+        },
+        {
+          "id": 3,
+          "name": "Subcategory 2",
+          "parentID": 1,
+          "children": [
+            {
+              "id": 4,
+              "name": "Sub-subcategory",
+              "parentID": 3,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+    ```
+- **Error Response:**
+  - **Code:** 404 NOT FOUND
+  - **Content:** `{ "error": "Category not found" }`
+
+
 ### Create New Category
 
 Creates a new category.
 
-- **URL:** `/categories`
+- **URL:** `/category`
 - **Method:** `POST`
 - **Data Params:** 
   ```json
   {
     "name": "New Category",
-    "parentId": 1  // Optional
+    "parentID": 1  // Optional
   }
   ```
 - **Success Response:**
@@ -127,7 +172,32 @@ Creates a new category.
     {
       "id": 3,
       "name": "New Category",
-      "parentId": 1
+      "parentID": 1
+    }
+    ```
+  ```
+- **Category Exists Response:**
+  - **Code:** 400
+  - **Content:** 
+    ```json
+    {
+    "error": "Category already exists"
+    }
+    ```
+- **Parent Category Not Found Response:**
+  - **Code:** 404
+  - **Content:** 
+    ```json
+    {
+    "error": "Parent Category not found"
+    }
+    ```
+- **Bad Category Name Response:**
+  - **Code:** 400
+  - **Content:** 
+    ```json
+    {
+    "error": "Name cannot be null/empty"
     }
     ```
 
@@ -135,7 +205,7 @@ Creates a new category.
 
 Updates an existing category.
 
-- **URL:** `/categories/:id`
+- **URL:** `/category/:id/update`
 - **Method:** `PUT`
 - **URL Params:**
   - `id=[integer]` (required)
@@ -143,7 +213,7 @@ Updates an existing category.
   ```json
   {
     "name": "Updated Category Name",
-    "parentId": 2  // Optional
+    "parentID": 2  // Optional
   }
   ```
 - **Success Response:**
@@ -153,24 +223,47 @@ Updates an existing category.
     {
       "id": 1,
       "name": "Updated Category Name",
-      "parentId": 2
+      "parentID": 2
     }
     ```
 - **Error Response:**
-  - **Code:** 404 NOT FOUND
-  - **Content:** `{ "error": "Category not found" }`
+  - **Code:** 400 Bad Request
+  - **Content:** `{ "error": "Category or new parentID not found" }`
+
+### Move Subtree
+
+Moves a specific category to a new parent.
+
+- **URL:** `/category/:id/move/:newParentId`
+- **Method:** `PUT`
+- **URL Params:**
+  - `id=[integer]` (required)
+  - `newParentId=[integer]` (required)
+- **Success Response:**
+  - **Code:** 200
+  - **Content:**
+    ```json
+    {
+      "id": 1,
+      "name": "Updated Category Name",
+      "parentID": 2
+    }
+    ```
+- **Error Response:**
+  - **Code:** 400 NOT FOUND
+  - **Content:** `{ "error": "Category or parentID not found" }`
 
 ### Delete Category
 
 Deletes a specific category.
 
-- **URL:** `/categories/:id`
+- **URL:** `/category/:id`
 - **Method:** `DELETE`
 - **URL Params:**
   - `id=[integer]` (required)
 - **Success Response:**
   - **Code:** 204
-  - **Content:** No Content
+  - **Content:** 
 - **Error Response:**
   - **Code:** 404 NOT FOUND
   - **Content:** `{ "error": "Category not found" }`
