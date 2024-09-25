@@ -1,5 +1,4 @@
 import express from 'express';
-import { Pool } from 'pg';
 import routes from './routes/Index';
 import dotenv from 'dotenv';
 import logger from './configs/Logger';
@@ -41,14 +40,14 @@ app.use(express.json());
         res.status(500).send('Something went wrong!');
       });
 
-    // Set up routes
-    app.use('/api', routes);
+        // Set up routes
+        app.use('/api', routes);
 
-    // Start the server
-    app.listen(PORT, () => {
-        console.log(`Server is running on port http://localhost:${PORT}`);
-        logger.info(`Server is running on port http://localhost:${PORT}`);
-    });
+        // Start the server
+        app.listen(PORT, () => {
+            console.log(`Server is running on port http://localhost:${PORT}`);
+            logger.info(`Server is running on port http://localhost:${PORT}`);
+        });
     } catch (error) {
       console.log('Error during Data Source initialization: ', error);
       logger.error('Error during Data Source initialization: ', error);
@@ -65,7 +64,7 @@ process.on('unhandledRejection', (reason, promise) => {
   });
 
 // Catch uncaught exceptions
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', (error:any) => {
     console.log('Uncaught Exception thrown:', error);
     logger.error('Uncaught Exception thrown:', error);
 });

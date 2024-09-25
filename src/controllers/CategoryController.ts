@@ -35,6 +35,15 @@ export const getSubtree = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+export const getCategory = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const result = await categoryService.getCategoryById(parseInt(id)); //getSubtree(parseInt(id));
+        res.json(result);
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 export const moveSubtree = async (req: Request, res: Response) => {
     const { id, newParentId } = req.body;
@@ -46,10 +55,21 @@ export const moveSubtree = async (req: Request, res: Response) => {
     }
 };
 
+export const getAllCategories = async(req: Request, res: Response) => {
+    try {
+        const result = await categoryService.getAllCategories();
+        res.json(result);
+    } catch (error: any) {
+        console.error(error.message);
+        logger.error(error.message);
+          res.status(500).json({ error: 'Server error' });
+    }
+};
+
 export const getDefaultAndHealthCheck = async (req: Request, res: Response) => {
     try {
         const result = await pool.query('SELECT NOW()');
-        res.json(result.rows);
+        res.json("Server UP as at " + result.rows);
     } catch (error: any) {
         console.error(error.message);
         logger.error(error.message);

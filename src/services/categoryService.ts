@@ -1,5 +1,6 @@
 import { Category } from '../entities/Category';
 import { AppDataSource } from '../configs/AppDataSource';
+import { CategoryDTO } from '../dto/CategoryDTO';
 
 export class CategoryService {
     private categoryRepository = AppDataSource.getRepository(Category);
@@ -30,7 +31,19 @@ export class CategoryService {
     }
 
     async getSubtree(id: number) {
-        return this.categoryRepository.findBy({parentId: id});
+        const dto = new CategoryDTO();
+        const category = await this.categoryRepository.findOne({where: {id: id}});
+        if(category){
+            dto.id=category?.id;
+            dto.name=category?.name;
+            dto.parent = new Category();
+            if (category.parentId !== null) dto.parent = (await this.categoryRepository.findBy({id: category.parentId}))[0] || null;
+            dto.subtree = [];
+            let child = await this.categoryRepository.findBy({parentId: id});
+            if(child) dto.subtree = await this.categoryRepository.findBy({parentId: id});
+            return dto;
+        }
+        throw new Error('Parent Category not found');
     }
 
     async moveSubtree(id: number, newParentId: number) {

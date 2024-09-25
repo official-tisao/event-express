@@ -1,14 +1,18 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, Tree, TreeChildren, TreeParent } from 'typeorm';
 
-@Entity() 
+@Entity()
 export class Category {
     @PrimaryGeneratedColumn({name: "id"})
-    id: number=0;
+    id: number;
 
     @Column({name: "name"})
-    name: string="default";
+    name: string;
 
     @Column({name: "parent_id", nullable:true})
     parentId: number;
+
+    validate() {
+
+    }
 }
