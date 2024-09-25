@@ -49,9 +49,13 @@ To install the project, follow these steps:
    yarn run dev
    ```
 
-4. Start the development server:
+4. Run the unit tests:
    ```bash
-   yarn test
+   yarn run test
+   ```
+5. Run and the unit tests coverage:
+   ```bash
+   yarn run test:coverage
    ```
 
 ---
@@ -124,6 +128,7 @@ Retrieves a category and all its subcategories recursively.
     {
       "id": 1,
       "name": "Root Category",
+      "parentID": null,
       "children": [
         {
           "id": 2,

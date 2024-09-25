@@ -1,5 +1,5 @@
 import { Repository, EntityManager } from "typeorm";
-import { Category } from "../../src/entities/Category";
+import { Category } from "../entities/Category";
 import { DataSource } from 'typeorm';
 import dotenv from "dotenv";
 
@@ -61,4 +61,3 @@ export class TestHelper {
   }
 
 }
- 

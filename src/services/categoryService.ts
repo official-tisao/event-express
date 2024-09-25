@@ -2,6 +2,7 @@ import { Category } from '../entities/Category';
 import { AppDataSource } from '../configs/AppDataSource';
 import { CategoryDTO } from '../dto/CategoryDTO';
 import {CustomException} from "../exceptions/CustomException";
+import {EntityNotFoundError} from "typeorm";
 
 export class CategoryService {
     private categoryRepository = AppDataSource.getRepository(Category);
@@ -11,7 +12,7 @@ export class CategoryService {
         category.name = name;
         const exist = await this.categoryRepository.findOne({ where: { name: name } });
 
-        if (exist) throw new Error('Category already exists', 400);
+        if (exist) throw new CustomException('Category already exists', 400);
 
         if (parentID) {
             const parentIDCategory = await this.categoryRepository.findOne({where: {id: parentID}});
@@ -26,15 +27,16 @@ export class CategoryService {
     }
 
     async removeCategory(id: number) {
-        const category = await this.categoryRepository.findOne({where: {id: id}});
+        let category = await this.categoryRepository.findOne({where: {id: id}});
         if (category) {
             return this.categoryRepository.remove(category);
         }
+        //throw new EntityNotFoundError("Category not found", {"id": id});
         throw new CustomException('Category not found', 404);
     }
 
     async getSubtree(id: number): Promise<CategoryDTO> {
-        const category = await this.categoryRepository.findOne({where: {id: id}});
+        let category = await this.categoryRepository.findOne({where: {id: id}});
         if (!category) {
             throw new CustomException('Parent Category not found', 404);
         }
